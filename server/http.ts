@@ -87,7 +87,20 @@ function consumeIpQuota(env: ServerEnv, request: Request) {
 
 /* ---------------------------------------------------------------- Routes */
 
-export async function handleApi(request: Request, env: ServerEnv): Promise<Response> {
+/**
+ * Retrouve la clé Anthropic même si la variable a été mal nommée (par exemple traduite
+ * automatiquement par le navigateur en « CLÉ_API_ANTHROPIC ») : on prend alors la première
+ * variable dont la valeur ressemble à une clé Anthropic. La clé reste côté serveur.
+ */
+function withAnthropicKey(env: ServerEnv): ServerEnv {
+  const direct = env.ANTHROPIC_API_KEY?.trim();
+  if (direct) return { ...env, ANTHROPIC_API_KEY: direct };
+  const found = Object.values(env as Record<string, string | undefined>).find((v) => typeof v === "string" && v.trim().startsWith("sk-ant-"));
+  return found ? { ...env, ANTHROPIC_API_KEY: found.trim() } : env;
+}
+
+export async function handleApi(request: Request, rawEnv: ServerEnv): Promise<Response> {
+  const env = withAnthropicKey(rawEnv);
   const path = new URL(request.url).pathname.replace(/\/+$/, "");
   try {
     if (path.endsWith("/api/health")) {
