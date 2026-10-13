@@ -7,7 +7,7 @@ import { devApi } from "./server/devApi.js";
 /** Génère le service worker avec la liste exacte des fichiers à mettre en cache pour le hors-ligne. */
 function serviceWorker(): Plugin {
   return {
-    name: "project-one-sw",
+    name: "nexora-sw",
     apply: "build",
     generateBundle(_opts, bundle) {
       const files = Object.keys(bundle).filter((f) => !f.endsWith(".map") && f !== "index.html");

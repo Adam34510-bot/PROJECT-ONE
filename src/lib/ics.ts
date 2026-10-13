@@ -12,9 +12,9 @@ const local = (date: string, time: string) => `${date.replace(/-/g, "")}T${time.
 
 export function agendaToIcs(items: AgendaItem[]): string {
   const now = stamp(new Date());
-  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//PROJECT ONE//Assistant personnel//FR", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//NEXORA//Assistant personnel//FR", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
   for (const a of items) {
-    lines.push("BEGIN:VEVENT", `UID:${a.id}@project-one`, `DTSTAMP:${now}`, `SUMMARY:${esc(a.label)}`);
+    lines.push("BEGIN:VEVENT", `UID:${a.id}@nexora`, `DTSTAMP:${now}`, `SUMMARY:${esc(a.label)}`);
     if (a.start) {
       // Sans heure de fin : 15 min pour un rappel, 1 h sinon (sans dépasser minuit).
       const end = a.end ?? toHHMM(Math.min(23 * 60 + 59, toMinutes(a.start) + (a.kind === "reminder" ? 15 : 60)));

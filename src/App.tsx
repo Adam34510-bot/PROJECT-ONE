@@ -74,7 +74,7 @@ export default function App() {
 
   useEffect(() => {
     const t = TITLES.find(([p]) => path === p || path.startsWith(`${p}/`));
-    document.title = t ? `${t[1]} · PROJECT ONE` : "PROJECT ONE · Votre assistant personnel";
+    document.title = t ? `${t[1]} · NEXORA` : "NEXORA · Votre assistant personnel";
   }, [path]);
 
   let page: React.ReactNode;

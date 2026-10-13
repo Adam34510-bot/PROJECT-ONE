@@ -22,7 +22,7 @@ async function toRequest(req: IncomingMessage): Promise<Request> {
 
 export function devApi(env: ServerEnv): Plugin {
   return {
-    name: "project-one-dev-api",
+    name: "nexora-dev-api",
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const url = req.url ?? "";

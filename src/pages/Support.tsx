@@ -63,7 +63,7 @@ export default function Support() {
       }
     } else if (SUPPORT_EMAIL) {
       const body = `${ticket.message}\n\n— Catégorie : ${CATS[category]}${ticket.email ? `\n— Contact : ${ticket.email}` : ""}`;
-      window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`[PROJECT ONE] ${ticket.subject}`)}&body=${encodeURIComponent(body)}`;
+      window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`[NEXORA] ${ticket.subject}`)}&body=${encodeURIComponent(body)}`;
       status = "email";
     }
     addTicket({ ...ticket, status });

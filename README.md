@@ -1,4 +1,4 @@
-# PROJECT ONE · Assistant personnel IA
+# NEXORA · Assistant personnel IA
 
 Application web installable sur iPhone et Android (PWA), sans App Store ni Google Play. L'assistant prépare, **vous validez**, puis l'action est exécutée et vérifiée.
 
@@ -66,7 +66,7 @@ Le badge en haut de l'application passe de « Mode démo » à « IA connectée 
    - **Project URL** → `VITE_SUPABASE_URL`
    - la clé **anon public** → `VITE_SUPABASE_ANON_KEY` (elle est publique par conception ; ne copiez **jamais** la clé « service_role »).
 4. Ouvrez **Authentication > URL Configuration** :
-   - **Site URL** : l'adresse de votre site en ligne (par exemple `https://project-one.vercel.app`) ;
+   - **Site URL** : l'adresse de votre site en ligne (par exemple `https://nexora.vercel.app`) ;
    - **Redirect URLs** : ajoutez la même adresse, et `http://localhost:5173` pour les tests.
 5. (Conseillé) **Authentication > Emails** : personnalisez l'e-mail de confirmation en français.
 

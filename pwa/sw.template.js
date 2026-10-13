@@ -1,9 +1,9 @@
-// Service worker de PROJECT ONE (généré à chaque compilation par vite.config.ts).
+// Service worker de NEXORA (généré à chaque compilation par vite.config.ts).
 // - Met en cache toute l'application dès l'installation : elle s'ouvre même hors ligne.
 // - Les appels /api (IA) et les services externes ne sont jamais mis en cache.
 // - Affiche les notifications et rouvre l'application au bon écran quand on touche une notification.
 const VERSION = "__VERSION__";
-const CACHE = `project-one-${VERSION}`;
+const CACHE = `nexora-${VERSION}`;
 const PRECACHE = __PRECACHE__;
 
 self.addEventListener("install", (e) => {
@@ -15,7 +15,7 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("project-one-") && k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => (k.startsWith("nexora-") || k.startsWith("project-one-")) && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });

@@ -428,6 +428,7 @@ export const useStore = create<State>()(
       },
     }),
     {
+      // Clé interne héritée du nom de travail : la garder évite de perdre les données déjà enregistrées.
       name: "project-one:v1",
       version: 1,
       storage: createJSONStorage(() => safeStorage),

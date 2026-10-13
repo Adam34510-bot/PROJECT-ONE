@@ -414,7 +414,7 @@ export default function Landing() {
         <div className="pub-inner row-between wrap" style={{ gap: 16 }}>
           <Logo />
           <span className="faint" style={{ fontSize: 13 }}>
-            « PROJECT ONE » est un nom de travail provisoire. Prototype {new Date().getFullYear()}.
+            © {new Date().getFullYear()} NEXORA · Assistant personnel.
           </span>
         </div>
       </footer>

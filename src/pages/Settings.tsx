@@ -36,7 +36,7 @@ export default function Settings() {
       tickets: st.tickets,
       audit: st.audit,
     };
-    downloadText(`project-one-export-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(data, null, 2), "application/json");
+    downloadText(`nexora-export-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(data, null, 2), "application/json");
     st.log("Export de toutes les données effectué.");
     toast.success("Export téléchargé (format JSON).");
   };

@@ -1,5 +1,5 @@
 -- =====================================================================
--- PROJECT ONE : base de données Supabase
+-- NEXORA : base de données Supabase
 -- À exécuter UNE FOIS : Supabase > SQL Editor > New query > coller > Run.
 -- Peut être relancé sans risque (les objets existants sont conservés).
 -- =====================================================================

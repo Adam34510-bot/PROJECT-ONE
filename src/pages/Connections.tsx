@@ -72,7 +72,7 @@ export default function Connections() {
     const r = await Notification.requestPermission();
     setNotif(r === "default" ? "prompt" : (r as PermState));
     if (r === "granted") {
-      const shown = await showSystemNotification("PROJECT ONE", "Notifications activées pour vos rappels.");
+      const shown = await showSystemNotification("NEXORA", "Notifications activées pour vos rappels.");
       toast.success(shown ? "Notifications activées." : "Notifications autorisées.");
     } else if (r === "denied") toast.error("Notifications refusées. Vous pourrez les réactiver dans les réglages du navigateur.");
   };
@@ -186,7 +186,7 @@ export default function Connections() {
                 className="btn btn-secondary btn-sm"
                 disabled={!upcoming.length}
                 onClick={() => {
-                  downloadText("project-one-agenda.ics", agendaToIcs(upcoming), "text/calendar");
+                  downloadText("nexora-agenda.ics", agendaToIcs(upcoming), "text/calendar");
                   useStore.getState().log(`Agenda exporté vers le calendrier (${upcoming.length} élément(s)).`);
                   toast.success("Fichier calendrier créé : ouvrez-le pour ajouter les événements.");
                 }}

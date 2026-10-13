@@ -34,12 +34,11 @@ export function LogoMark({ size = 28 }: { size?: number }) {
 
 export function Logo({ compact = false }: { compact?: boolean }) {
   return (
-    <span className="logo" aria-label="PROJECT ONE">
+    <span className="logo" aria-label="NEXORA">
       <LogoMark />
       {!compact && (
         <span className="logo-word">
-          <span className="p">PROJECT</span>
-          <span className="o">One</span>
+          <span className="n">NEXORA</span>
         </span>
       )}
     </span>

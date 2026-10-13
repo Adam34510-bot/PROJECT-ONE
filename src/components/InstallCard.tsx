@@ -19,7 +19,7 @@ export function InstallCard() {
       ) : (
         <div className="stack gap-12">
           <p className="muted" style={{ fontSize: 14 }}>
-            Installez PROJECT ONE comme une application, sans passer par l'App Store ni Google Play : icône sur l'écran d'accueil, plein écran, ouverture hors ligne.
+            Installez NEXORA comme une application, sans passer par l'App Store ni Google Play : icône sur l'écran d'accueil, plein écran, ouverture hors ligne.
           </p>
           {canPrompt && (
             <button
