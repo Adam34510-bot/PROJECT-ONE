@@ -489,9 +489,11 @@ export interface TravelInput {
   budget: string;
   style: "eco" | "confort";
   interests: string[];
+  /** Moyen de transport choisi (absent sur les anciennes missions). */
+  transport?: "avion" | "train" | "voiture";
 }
 
-export const travelDefaults: TravelInput = { destination: "", origin: "", departure: "", nights: "2", people: "2", budget: "300", style: "eco", interests: ["Culture", "Gastronomie"] };
+export const travelDefaults: TravelInput = { destination: "", origin: "", departure: "", nights: "2", people: "2", budget: "300", style: "eco", interests: ["Culture", "Gastronomie"], transport: "avion" };
 
 export const TRAVEL_INTERESTS = ["Culture", "Gastronomie", "Nature", "Détente", "Vie nocturne", "Sport"];
 
@@ -536,16 +538,24 @@ export function runTravel(i: TravelInput): FlowOutput {
   });
 
   const q = encodeURIComponent(i.destination);
-  const links = [
-    { label: "Trains sur SNCF Connect", url: "https://www.sncf-connect.com/" },
-    { label: `Vols vers ${i.destination} (Google Flights)`, url: `https://www.google.com/travel/flights?q=${encodeURIComponent(`vols ${i.origin ? `de ${i.origin} ` : ""}vers ${i.destination}`)}` },
-    { label: `Hébergements à ${i.destination}`, url: `https://www.booking.com/searchresults.fr.html?ss=${q}&group_adults=${people}` },
-  ];
+  const flight = { label: `Vols vers ${i.destination} (Google Flights)`, url: `https://www.google.com/travel/flights?q=${encodeURIComponent(`vols ${i.origin ? `de ${i.origin} ` : ""}vers ${i.destination}`)}` };
+  const train = { label: "Trains sur SNCF Connect", url: "https://www.sncf-connect.com/" };
+  const road = { label: `Itinéraire en voiture vers ${i.destination} (Google Maps)`, url: `https://www.google.com/maps/dir/?api=1&destination=${q}${i.origin ? `&origin=${encodeURIComponent(i.origin)}` : ""}&travelmode=driving` };
+  const stay = { label: `Hébergements à ${i.destination}`, url: `https://www.booking.com/searchresults.fr.html?ss=${q}&group_adults=${people}` };
+  const transport = i.transport === "train" ? train : i.transport === "voiture" ? road : flight;
+  // Les anciennes missions sans moyen choisi gardent les deux pistes.
+  const links = i.transport ? [transport, stay] : [train, flight, stay];
+  const transportSite = i.transport === "train" ? "SNCF Connect" : i.transport === "voiture" ? "Google Maps" : "Google Flights";
 
   const warn = perNight / people < 20;
   const actions: MissionAction[] = [
-    action({ label: "Rechercher un transport", description: "Ouvre SNCF Connect dans un nouvel onglet. La réservation se fait sur le site.", executor: "open_url", payload: { url: links[0].url } }),
-    action({ label: "Rechercher un hébergement", description: `Ouvre une recherche pour ${people} personne(s) à ${i.destination}.`, executor: "open_url", payload: { url: links[2].url } }),
+    action({
+      label: i.transport === "voiture" ? "Préparer l'itinéraire" : i.transport === "train" ? "Rechercher un train" : "Rechercher un vol",
+      description: `Ouvre ${transportSite} dans un nouvel onglet.${i.transport === "voiture" ? "" : " La réservation se fait sur le site."}`,
+      executor: "open_url",
+      payload: { url: transport.url },
+    }),
+    action({ label: "Rechercher un hébergement", description: `Ouvre une recherche pour ${people} personne(s) à ${i.destination}.`, executor: "open_url", payload: { url: stay.url } }),
   ];
   if (i.departure) {
     actions.push(
@@ -763,3 +773,27 @@ export function runAppointment(i: AppointmentInput): FlowOutput {
 /* ------------------------------------------------------------------ Registre */
 
 export const FLOW_KINDS: MissionKind[] = ["day", "savings", "compare", "admin", "travel", "subscriptions", "appointment"];
+
+/* ------------------------------------------------------------------ Pré-remplissage */
+
+/**
+ * Applique aux valeurs par défaut d'un parcours les champs déjà connus grâce à la conversation
+ * (envoyés par l'assistant). Seuls les champs existants sont repris, convertis au bon type ;
+ * une liste (ex. envies) se donne séparée par des virgules.
+ */
+export function applyPrefill<T extends object>(defaults: T, prefill: Record<string, string> | null | undefined): T {
+  if (!prefill) return defaults;
+  const out = { ...defaults } as Record<string, unknown>;
+  for (const [key, raw] of Object.entries(prefill)) {
+    if (!(key in out) || typeof raw !== "string" || !raw.trim()) continue;
+    const value = raw.trim();
+    const current = out[key];
+    if (Array.isArray(current)) out[key] = value.split(",").map((x) => x.trim()).filter(Boolean);
+    else if (typeof current === "boolean") out[key] = /^(oui|true|1|yes)$/i.test(value);
+    else if (typeof current === "number") {
+      const n = parseNumber(value);
+      if (Number.isFinite(n)) out[key] = n;
+    } else out[key] = value;
+  }
+  return out as T;
+}

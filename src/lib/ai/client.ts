@@ -89,6 +89,7 @@ interface LiveReply {
   questions: { question: string; options: string[] }[];
   steps: string[];
   suggestedMission: MissionKind | "none";
+  missionPrefill?: { field: string; value: string }[];
   memoryCandidates: { category: string; text: string }[];
   cannotDo: string[];
 }
@@ -99,7 +100,15 @@ function liveToBlocks(r: LiveReply): ChatBlock[] {
   const blocks: ChatBlock[] = [];
   if (r.known.length || r.assumptions.length) blocks.push({ type: "knowledge", known: r.known, assumptions: r.assumptions });
   if (r.steps.length) blocks.push({ type: "steps", items: r.steps });
-  if (r.suggestedMission !== "none") blocks.push({ type: "mission", kind: r.suggestedMission, reason: "Parcours guidé suggéré par l'assistant." });
+  if (r.suggestedMission !== "none") {
+    const prefill = Object.fromEntries((r.missionPrefill ?? []).filter((f) => f.field && f.value?.trim()).map((f) => [f.field, f.value.trim()]));
+    blocks.push({
+      type: "mission",
+      kind: r.suggestedMission,
+      reason: Object.keys(prefill).length ? "Le formulaire est pré-rempli avec ce que vous avez déjà dit." : "Parcours guidé suggéré par l'assistant.",
+      ...(Object.keys(prefill).length ? { prefill } : {}),
+    });
+  }
   if (r.questions.length) blocks.push({ type: "questions", items: r.questions.slice(0, 2) });
   if (r.memoryCandidates.length)
     blocks.push({

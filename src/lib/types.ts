@@ -105,7 +105,7 @@ export type ChatBlock =
   | { type: "steps"; items: string[] }
   | { type: "knowledge"; known: string[]; assumptions: string[] }
   | { type: "questions"; items: { question: string; options: string[] }[] }
-  | { type: "mission"; kind: MissionKind; reason: string }
+  | { type: "mission"; kind: MissionKind; reason: string; prefill?: Record<string, string> }
   | { type: "memory"; items: { id: string; category: MemoryCategory; text: string; state: "pending" | "saved" | "dismissed" }[] }
   | { type: "limits"; items: string[] }
   | { type: "reminder"; actionId: string; label: string; date: string; time: string; state: "awaiting" | "executed" | "declined" };

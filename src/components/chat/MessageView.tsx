@@ -201,7 +201,7 @@ function Block({
               const id = createFreeMission(previousUserText || "Demande libre", conversationId);
               toast.success("Demande enregistrée dans le centre des missions.");
               navigate(`/app/missions/${id}`);
-            } else navigate(`/app/nouvelle/${block.kind}?conv=${conversationId}`);
+            } else navigate(`/app/nouvelle/${block.kind}?conv=${conversationId}${block.prefill ? `&prefill=${encodeURIComponent(JSON.stringify(block.prefill))}` : ""}`);
           }}
         >
           <span className="icon-tile" style={{ ["--hue" as string]: meta.hue }}>

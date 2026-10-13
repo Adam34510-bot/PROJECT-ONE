@@ -76,18 +76,19 @@ export default function MissionFlow({ kind }: { kind: MissionKind }) {
         </Notice>
       )}
       <div className="flow-card card card-pad reveal">
-        {kind === "day" && <DayForm initial={initial} onSubmit={submit} disabled={blocked} />}
+        {kind === "day" && <DayForm initial={initial} prefill={prefill} onSubmit={submit} disabled={blocked} />}
         {kind === "compare" && <CompareForm initial={initial} prefill={prefill} onSubmit={submit} disabled={blocked} />}
-        {kind === "savings" && <SavingsForm initial={initial} onSubmit={submit} disabled={blocked} />}
+        {kind === "savings" && <SavingsForm initial={initial} prefill={prefill} onSubmit={submit} disabled={blocked} />}
         {kind === "admin" && <AdminForm initial={initial} prefill={prefill} onSubmit={submit} disabled={blocked} />}
-        {kind === "travel" && <TravelForm initial={initial} onSubmit={submit} disabled={blocked} />}
+        {kind === "travel" && <TravelForm initial={initial} prefill={prefill} onSubmit={submit} disabled={blocked} />}
         {kind === "subscriptions" && <SubscriptionsForm initial={initial} onSubmit={submit} disabled={blocked} />}
-        {kind === "appointment" && <AppointmentForm initial={initial} onSubmit={submit} disabled={blocked} />}
+        {kind === "appointment" && <AppointmentForm initial={initial} prefill={prefill} onSubmit={submit} disabled={blocked} />}
       </div>
     </div>
   );
 }
 
+type Prefill = { prefill: Record<string, string> | null };
 type FormProps<T> = { initial: T | null; onSubmit: (input: T, out: F.FlowOutput) => void; disabled?: boolean };
 
 function Submit({ disabled, children = "Préparer la mission" }: { disabled?: boolean; children?: ReactNode }) {
@@ -126,8 +127,8 @@ function useForm<T extends object>(initial: T, validate: (v: T) => Errors) {
 }
 
 /* ---------------------------------------------------------------- Journée */
-function DayForm({ initial, onSubmit, disabled }: FormProps<F.DayInput>) {
-  const { v, set, errors, check } = useForm(initial ?? F.dayDefaults, F.validateDay);
+function DayForm({ initial, prefill, onSubmit, disabled }: FormProps<F.DayInput> & Prefill) {
+  const { v, set, errors, check } = useForm(initial ?? F.applyPrefill(F.dayDefaults, prefill), F.validateDay);
   return (
     <form
       className="stack gap-16"
@@ -270,8 +271,8 @@ function CompareForm({ initial, prefill, onSubmit, disabled }: FormProps<F.Compa
 }
 
 /* ---------------------------------------------------------------- Économies */
-function SavingsForm({ initial, onSubmit, disabled }: FormProps<F.SavingsInput>) {
-  const { v, set, errors, check } = useForm(initial ?? F.savingsDefaults, F.validateSavings);
+function SavingsForm({ initial, prefill, onSubmit, disabled }: FormProps<F.SavingsInput> & Prefill) {
+  const { v, set, errors, check } = useForm(initial ?? F.applyPrefill(F.savingsDefaults, prefill), F.validateSavings);
   const fields: [keyof F.SavingsInput, string, string][] = [
     ["energy", "Électricité et gaz", "85"],
     ["mobile", "Forfait(s) mobile", "19,99"],
@@ -311,7 +312,8 @@ function SavingsForm({ initial, onSubmit, disabled }: FormProps<F.SavingsInput>)
 /* ---------------------------------------------------------------- Démarche */
 function AdminForm({ initial, prefill, onSubmit, disabled }: FormProps<F.AdminInput> & { prefill: Record<string, string> | null }) {
   const profileName = useStore((s) => s.profile.name);
-  const start: F.AdminInput = initial ?? { ...F.adminDefaults, fullName: profileName, ...(prefill ? { type: (prefill.type as F.AdminType) ?? "resiliation", organisme: prefill.organisme ?? "" } : {}) };
+  const filled = initial ?? F.applyPrefill({ ...F.adminDefaults, fullName: profileName }, prefill);
+  const start: F.AdminInput = { ...filled, type: filled.type in F.ADMIN_TYPES ? filled.type : "resiliation" };
   const { v, set, errors, check } = useForm(start, F.validateAdmin);
   return (
     <form
@@ -356,8 +358,9 @@ function AdminForm({ initial, prefill, onSubmit, disabled }: FormProps<F.AdminIn
 }
 
 /* ---------------------------------------------------------------- Voyage */
-function TravelForm({ initial, onSubmit, disabled }: FormProps<F.TravelInput>) {
-  const { v, set, errors, check } = useForm(initial ?? F.travelDefaults, F.validateTravel);
+function TravelForm({ initial, prefill, onSubmit, disabled }: FormProps<F.TravelInput> & Prefill) {
+  const start = initial ?? F.applyPrefill(F.travelDefaults, prefill);
+  const { v, set, errors, check } = useForm({ ...start, interests: start.interests.filter((x) => F.TRAVEL_INTERESTS.includes(x)) }, F.validateTravel);
   return (
     <form
       className="stack gap-16"
@@ -389,6 +392,18 @@ function TravelForm({ initial, onSubmit, disabled }: FormProps<F.TravelInput>) {
           <input id="tp" type="number" min={1} max={12} className="input" value={v.people} onChange={(e) => set("people", e.target.value)} />
         </Field>
       </div>
+      <Field label="Transport">
+        <Segmented
+          label="Moyen de transport"
+          value={v.transport ?? "avion"}
+          onChange={(x) => set("transport", x)}
+          options={[
+            { value: "avion", label: "Avion" },
+            { value: "train", label: "Train" },
+            { value: "voiture", label: "Voiture" },
+          ]}
+        />
+      </Field>
       <Field label="Style">
         <Segmented
           label="Style de voyage"
@@ -463,8 +478,9 @@ function SubscriptionsForm({ initial, onSubmit, disabled }: FormProps<F.Subscrip
 }
 
 /* ---------------------------------------------------------------- Rendez-vous */
-function AppointmentForm({ initial, onSubmit, disabled }: FormProps<F.AppointmentInput>) {
-  const { v, set, errors, check } = useForm(initial ?? F.appointmentDefaults, F.validateAppointment);
+function AppointmentForm({ initial, prefill, onSubmit, disabled }: FormProps<F.AppointmentInput> & Prefill) {
+  const start = initial ?? F.applyPrefill(F.appointmentDefaults, prefill);
+  const { v, set, errors, check } = useForm({ ...start, type: start.type in F.APPOINTMENT_TYPES ? start.type : "autre" }, F.validateAppointment);
   return (
     <form
       className="stack gap-16"

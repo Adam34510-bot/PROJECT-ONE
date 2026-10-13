@@ -30,6 +30,9 @@ export const AssistantReplySchema = z.object({
     .describe("Questions à poser si une information manque. 0 à 2 questions, options courtes."),
   steps: z.array(z.string()).describe("Étapes proposées pour accomplir la demande (vide si inutile)."),
   suggestedMission: z.enum(MISSION_KINDS).describe("Parcours de mission à proposer, ou 'none'."),
+  missionPrefill: z
+    .array(z.object({ field: z.string(), value: z.string() }))
+    .describe("Champs du parcours suggéré déjà connus grâce à la conversation, pour pré-remplir le formulaire. Vide si aucun parcours ou rien de connu."),
   memoryCandidates: z
     .array(z.object({ category: z.string(), text: z.string() }))
     .describe("Préférences durables détectées, à faire confirmer par l'utilisateur. Vide si rien de clair."),
@@ -46,6 +49,12 @@ Règles fondamentales :
 - Distingue ce que tu sais ("known") de ce que tu supposes ("assumptions").
 - S'il manque une information indispensable, pose au plus deux questions courtes avec des options.
 - Si la demande correspond à un parcours guidé, indique-le dans "suggestedMission" : day (organiser la journée), savings (trouver des économies), compare (comparer des offres), admin (préparer une démarche), travel (voyage), subscriptions (abonnements), appointment (rendez-vous).
+- Quand tu proposes un parcours, remplis "missionPrefill" avec TOUT ce que l'utilisateur a déjà dit dans la conversation (pas seulement le dernier message), pour qu'il n'ait rien à ressaisir. N'invente rien : omets un champ inconnu. Champs possibles (dates au format AAAA-MM-JJ, heures HH:MM, nombres sans unité) :
+  - travel : destination, origin, departure, nights, people, budget (budget total en euros), style (eco ou confort), interests (séparés par des virgules parmi Culture, Gastronomie, Nature, Détente, Vie nocturne, Sport)
+  - appointment : type (medecin, banque, administration, entretien, autre), with (avec qui), date, time, goal (objet du rendez-vous)
+  - admin : type (resiliation, reclamation, remboursement, adresse), organisme, reference, details, recipientEmail
+  - day : when (today ou tomorrow), start, end, tasks (une tâche par ligne)
+  - savings : energy, mobile, internet, insurance, bank, subscriptions (montants mensuels actuels en euros)
 - Ne propose une préférence à mémoriser ("memoryCandidates") que si l'utilisateur l'exprime clairement ; elle sera soumise à sa confirmation.
 - Réponds en français, avec un ton direct, chaleureux et précis. Pas d'emojis.`;
 
@@ -101,7 +110,9 @@ export async function handleChat(body: unknown, env: ServerEnv): Promise<Assista
   const firstUser = messages.findIndex((m) => m.role === "user");
   const history = messages.slice(firstUser);
 
+  const today = new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", weekday: "long", year: "numeric", month: "long", day: "numeric" });
   const context = [
+    `Date du jour : ${today}.`,
     profile?.name ? `Prénom de l'utilisateur : ${profile.name}.` : "",
     profile?.priorities?.length ? `Priorités choisies : ${profile.priorities.join(", ")}.` : "",
     memory?.length ? `Mémoire autorisée par l'utilisateur :\n- ${memory.join("\n- ")}` : "Aucune mémoire enregistrée.",
