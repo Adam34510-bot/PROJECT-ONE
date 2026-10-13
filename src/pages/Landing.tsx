@@ -414,7 +414,10 @@ export default function Landing() {
         <div className="pub-inner row-between wrap" style={{ gap: 16 }}>
           <Logo />
           <span className="faint" style={{ fontSize: 13 }}>
-            © {new Date().getFullYear()} NEXORA · Assistant personnel.
+            © {new Date().getFullYear()} NEXORA · Assistant personnel. ·{" "}
+            <a href="/confidentialite.html" style={{ color: "inherit" }}>
+              Confidentialité
+            </a>
           </span>
         </div>
       </footer>

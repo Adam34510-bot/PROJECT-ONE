@@ -215,6 +215,15 @@ export default function Settings() {
               <Download /> Exporter
             </button>
           </div>
+          <div className="setting-row">
+            <div>
+              <div className="label">Politique de confidentialité</div>
+              <div className="desc">Quelles données sont utilisées, où elles vont, comment les supprimer.</div>
+            </div>
+            <a className="btn btn-secondary btn-sm" href="/confidentialite.html" target="_blank" rel="noopener">
+              Lire
+            </a>
+          </div>
           {hasDemo && (
             <div className="setting-row">
               <div>
