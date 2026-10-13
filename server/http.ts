@@ -105,11 +105,7 @@ export async function handleApi(request: Request, rawEnv: ServerEnv): Promise<Re
   try {
     if (path.endsWith("/api/health")) {
       if (request.method !== "GET") throw new HttpError(405, "Méthode non autorisée.");
-      // Diagnostic temporaire : noms des variables qui ressemblent à la clé (jamais leur valeur).
-      const keyVars = Object.entries(rawEnv as Record<string, string | undefined>)
-        .filter(([k]) => /anthrop|api_?key|cl[eé]/i.test(k))
-        .map(([k, v]) => ({ name: k, length: v?.trim().length ?? 0, looksLikeKey: Boolean(v?.trim().startsWith("sk-ant-")) }));
-      return json({ ...aiStatus(env), keyVars });
+      return json(aiStatus(env));
     }
     if (path.endsWith("/api/chat")) {
       if (request.method !== "POST") throw new HttpError(405, "Méthode non autorisée.");
