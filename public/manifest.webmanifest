@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "PROJECT ONE · Assistant personnel",
+  "short_name": "Project One",
+  "description": "L'assistant personnel qui prépare vos tâches et les exécute après votre validation.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/#/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06070c",
+  "theme_color": "#06070c",
+  "categories": ["productivity", "lifestyle", "finance"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Parler à l'assistant", "short_name": "Assistant", "url": "/#/app/assistant", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Mes missions", "short_name": "Missions", "url": "/#/app/missions", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Mon bilan", "short_name": "Bilan", "url": "/#/app/bilan", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
